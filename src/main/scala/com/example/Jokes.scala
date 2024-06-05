@@ -1,8 +1,8 @@
-package com.example.
+package com.example
 
 import cats.effect.Concurrent
 import cats.syntax.all.*
-import io.circe.{Encoder, Decoder}
+import io.circe.{ Encoder, Decoder }
 import org.http4s.*
 import org.http4s.implicits.*
 import org.http4s.client.Client
@@ -26,8 +26,8 @@ object Jokes:
   final case class JokeError(e: Throwable) extends RuntimeException
 
   def impl[F[_]: Concurrent](C: Client[F]): Jokes[F] = new Jokes[F]:
-    val dsl = new Http4sClientDsl[F]{}
+    val dsl = new Http4sClientDsl[F] {}
     import dsl.*
-    def get: F[Jokes.Joke] = 
+    def get: F[Jokes.Joke] =
       C.expect[Joke](GET(uri"https://icanhazdadjoke.com/"))
-        .adaptError{ case t => JokeError(t)} // Prevent Client Json Decoding Failure Leaking
+        .adaptError { case t => JokeError(t) } // Prevent Client Json Decoding Failure Leaking

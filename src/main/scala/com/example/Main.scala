@@ -1,4 +1,4 @@
-package com.example.
+package com.example
 
 import cats.effect.{IO, IOApp}
 
