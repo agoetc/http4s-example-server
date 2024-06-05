@@ -1,8 +1,8 @@
-package com.example.http4sexampleserver
+package com.example.
 
 import cats.effect.IO
-import org.http4s._
-import org.http4s.implicits._
+import org.http4s.*
+import org.http4s.implicits.*
 import munit.CatsEffectSuite
 
 class HelloWorldSpec extends CatsEffectSuite:
@@ -15,7 +15,7 @@ class HelloWorldSpec extends CatsEffectSuite:
     assertIO(retHelloWorld.flatMap(_.as[String]), "{\"message\":\"Hello, world\"}")
   }
 
-  private[this] val retHelloWorld: IO[Response[IO]] =
+  private[this] val retHelloWorld: IO[Response[IO]] = 
     val getHW = Request[IO](Method.GET, uri"/hello/world")
     val helloWorld = HelloWorld.impl[IO]
-    Http4sexampleserverRoutes.helloWorldRoutes(helloWorld).orNotFound(getHW)
+Routes.helloWorldRoutes(helloWorld).orNotFound(getHW)

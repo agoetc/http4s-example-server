@@ -1,16 +1,17 @@
-package com.example.http4sexampleserver
+package com.example.
 
 import cats.effect.Async
-import cats.syntax.all._
-import com.comcast.ip4s._
+import cats.syntax.all.*
+import com.comcast.ip4s.*
+import fs2.io.net.Network
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.implicits._
+import org.http4s.implicits.*
 import org.http4s.server.middleware.Logger
 
-object Http4sexampleserverServer:
+object Server:
 
-  def run[F[_]: Async]: F[Nothing] = {
+  def run[F[_]: Async: Network]: F[Nothing] = {
     for {
       client <- EmberClientBuilder.default[F].build
       helloWorldAlg = HelloWorld.impl[F]
@@ -18,11 +19,11 @@ object Http4sexampleserverServer:
 
       // Combine Service Routes into an HttpApp.
       // Can also be done via a Router if you
-      // want to extract a segments not checked
+      // want to extract segments not checked
       // in the underlying routes.
       httpApp = (
-        Http4sexampleserverRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-        Http4sexampleserverRoutes.jokeRoutes[F](jokeAlg)
+Routes.helloWorldRoutes[F](helloWorldAlg) <+>
+Routes.jokeRoutes[F](jokeAlg)
       ).orNotFound
 
       // With Middlewares in place
