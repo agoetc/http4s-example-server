@@ -6,9 +6,9 @@ import org.http4s.circe.CirceEntityCodec.*
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{ HttpRoutes, circe }
 
-object Routes:
+object ExampleRoute:
 
-  def exampleRoutes(E: ExampleController): HttpRoutes[IO] =
+  def route(E: ExampleController): HttpRoutes[IO] =
     val dsl = new Http4sDsl[IO] {}
     import dsl.*
 

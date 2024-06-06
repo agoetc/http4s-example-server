@@ -3,7 +3,7 @@ package com.example.api.app
 import cats.effect.{ IO, IOApp }
 import com.comcast.ip4s.*
 import com.example.api.app.controller.ExampleController
-import com.example.api.app.route.Routes
+import com.example.api.app.route.ExampleRoute
 import fs2.io.net.Network
 import org.http4s.HttpApp
 import org.http4s.ember.client.EmberClientBuilder
@@ -20,8 +20,8 @@ object Main extends IOApp.Simple:
     for {
       client <- EmberClientBuilder.default[IO].build
       httpApp: HttpApp[IO] =
-        Routes
-          .exampleRoutes(new ExampleController)
+        ExampleRoute
+          .route(new ExampleController)
           .orNotFound
           .pipe(Logger.httpApp(logHeaders = true, logBody = true))
 
