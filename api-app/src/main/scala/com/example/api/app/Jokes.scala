@@ -1,4 +1,4 @@
-package com.example
+package com.example.api.app
 
 import cats.effect.Concurrent
 import cats.syntax.all.*

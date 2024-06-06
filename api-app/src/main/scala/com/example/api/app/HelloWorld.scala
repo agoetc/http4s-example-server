@@ -1,4 +1,4 @@
-package com.example
+package com.example.api.app
 
 import cats.Applicative
 import cats.syntax.all.*
