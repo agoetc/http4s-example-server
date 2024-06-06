@@ -17,7 +17,7 @@ object ExampleController:
 
   case class ExampleControllerRequest(
       name: String,
-      age: Int = 11
+      age: Int
   ) derives Decoder
 
   final case class ExampleControllerResponse(

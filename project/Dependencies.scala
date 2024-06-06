@@ -42,7 +42,16 @@ object Dependencies {
 
   object Log4Cats {
     val core = "org.typelevel" %% "log4cats-core" % "2.6.0"
-    val slf4j = "org.typelevel" %% "log4cats-slf4j" % "2.6.0"
+    val slp4s = "org.typelevel" %% "log4cats-slf4j" % "2.6.0"
+
+    val all: Seq[ModuleID] = Seq(
+      core,
+      slp4s
+    )
+  }
+  
+  object LogBackClassic {
+    val logbackClassic = "ch.qos.logback" % "logback-classic" % "1.5.6"
   }
 
   object Pureconfig {

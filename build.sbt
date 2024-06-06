@@ -30,7 +30,9 @@ lazy val apiHttp = (project in file("api-http"))
     libraryDependencies ++=
       Http4s.all ++
         Circe.all ++
+        Log4Cats.all ++
         Seq(
+          LogBackClassic.logbackClassic,
           Cats.catsCore,
           CatsEffect.catsEffect
         )
