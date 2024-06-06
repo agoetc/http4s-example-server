@@ -1,4 +1,4 @@
-package com.example.api.app.route
+package com.example.api.http.route
 
 import cats.effect.IO
 import com.example.api.app.controller.ExampleController
@@ -21,6 +21,6 @@ object ExampleRoute:
         } yield resp
       case GET -> Root / "aaa" =>
         for {
-          resp <- Ok("aa")
+          resp <- Ok("aaa")
         } yield resp
     }

@@ -7,7 +7,9 @@ class ExampleController:
   import com.example.api.app.controller.ExampleController.*
 
   def execute(req: ExampleControllerRequest): IO[ExampleControllerResponse] = {
-    ExampleControllerResponse("Hello, " + req.name).pure[IO]
+    ExampleControllerResponse(
+        s"Hello, ${req.name}, you are ${req.age} years old!"
+    ).pure[IO]
   }
 
 object ExampleController:

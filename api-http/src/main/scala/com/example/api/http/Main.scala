@@ -1,9 +1,9 @@
-package com.example.api.app
+package com.example.api.http
 
 import cats.effect.{ IO, IOApp }
 import com.comcast.ip4s.*
 import com.example.api.app.controller.ExampleController
-import com.example.api.app.route.ExampleRoute
+import com.example.api.http.route.ExampleRoute
 import fs2.io.net.Network
 import org.http4s.HttpApp
 import org.http4s.ember.client.EmberClientBuilder
