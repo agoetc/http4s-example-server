@@ -1,19 +1,34 @@
 import Dependencies.*
 
-lazy val root = (project in file("."))
-  .settings(
+inThisBuild(
+  Seq(
     organization := "com.example",
-    name := "http4s-example-server",
-    version := "0.0.1-SNAPSHOT",
-    scalaVersion := "3.3.3",
-    libraryDependencies ++=
-      Http4s.all ++
-        Seq(
-          Circe.generic,
-          Circe.parser
-        ),
+    scalaVersion := "3.4.2",
+    version := "0.0.1-SNAPSHOT"
+  )
+)
+
+lazy val apiApp = (project in file("api-app"))
+  .settings(
+    name := "api-app",
+    libraryDependencies ++= Seq(
+      Cats.catsCore,
+      CatsEffect.catsEffect
+    ) ++ Http4s.all,
     assembly / assemblyMergeStrategy := {
       case "module-info.class" => MergeStrategy.discard
       case x                   => (assembly / assemblyMergeStrategy).value.apply(x)
     }
+  )
+
+lazy val apiHttp = (project in file("adapter/http"))
+  .settings(
+    name := "adapter-http",
+    fork := true,
+    libraryDependencies ++= Seq(
+      Cats.catsCore,
+      CatsEffect.catsEffect,
+      Circe.parser,
+      Circe.generic
+    )
   )

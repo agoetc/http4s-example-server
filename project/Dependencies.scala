@@ -2,6 +2,13 @@ import sbt.*
 
 object Dependencies {
 
+  object Cats {
+    val catsCore = "org.typelevel" %% "cats-core" % "2.12.0"
+  }
+  object CatsEffect {
+    val catsEffect = "org.typelevel" %% "cats-effect" % "3.5.4"
+  }
+
   object Http4s {
     val Http4sVersion = "0.23.27"
     val http4sEmberServer = "org.http4s" %% "http4s-ember-server" % "0.23.27"
