@@ -10,10 +10,9 @@ inThisBuild(
 
 lazy val apiApp = (project in file("api-app"))
   .settings(
-    name := "api-app",
+    name := "apiApp",
     libraryDependencies ++=
-      Http4s.all ++
-        Circe.all ++
+      Circe.all ++
         Seq(
           Cats.catsCore,
           CatsEffect.catsEffect
@@ -24,14 +23,15 @@ lazy val apiApp = (project in file("api-app"))
     }
   )
 
-lazy val apiHttp = (project in file("adapter/http"))
+lazy val apiHttp = (project in file("api-http"))
   .settings(
-    name := "adapter-http",
+    name := "apiHttp",
     fork := true,
-    libraryDependencies ++= Seq(
-      Cats.catsCore,
-      CatsEffect.catsEffect,
-      Circe.parser,
-      Circe.generic
-    )
-  )
+    libraryDependencies ++=
+      Http4s.all ++
+        Circe.all ++
+        Seq(
+          Cats.catsCore,
+          CatsEffect.catsEffect
+        )
+  ) dependsOn apiApp
