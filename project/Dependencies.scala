@@ -31,6 +31,13 @@ object Dependencies {
   object Circe {
     val generic = "io.circe" %% "circe-generic" % "0.14.7"
     val parser = "io.circe" %% "circe-parser" % "0.14.7"
+    val literal = "io.circe" %% "circe-literal" % "0.14.7"
+
+    val all: Seq[ModuleID] = Seq(
+      generic,
+      parser,
+      literal
+    )
   }
 
   object Log4Cats {

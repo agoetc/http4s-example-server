@@ -11,10 +11,13 @@ inThisBuild(
 lazy val apiApp = (project in file("api-app"))
   .settings(
     name := "api-app",
-    libraryDependencies ++= Http4s.all ++ Seq(
-      Cats.catsCore,
-      CatsEffect.catsEffect,
-    ),
+    libraryDependencies ++=
+      Http4s.all ++
+        Circe.all ++
+        Seq(
+          Cats.catsCore,
+          CatsEffect.catsEffect
+        ),
     assembly / assemblyMergeStrategy := {
       case "module-info.class" => MergeStrategy.discard
       case x                   => (assembly / assemblyMergeStrategy).value.apply(x)
