@@ -14,6 +14,8 @@ lazy val apiApp = (project in file("api-app"))
     libraryDependencies ++=
       Circe.all ++
         Seq(
+          Http4s.http4sEmberClient,
+          Http4s.http4sCirce,
           Cats.catsCore,
           CatsEffect.catsEffect
         ),

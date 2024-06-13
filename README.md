@@ -12,6 +12,13 @@ curl -v -X GET http://localhost:8080/example\
    -d '{"name":"exampple", "age": 10}'
 ```
 
+### http://localhost:8080/example/http-run
+```shell
+curl -v -X GET http://localhost:8080/example/http-run\
+  -H "Content-Type: application/json" \
+
+```
+
 ### http://localhost:8080/aaa
 ```shell
 curl -v -X GET http://localhost:8080/aaa

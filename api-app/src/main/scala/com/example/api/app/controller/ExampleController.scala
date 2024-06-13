@@ -18,8 +18,8 @@ object ExampleController:
   case class ExampleControllerRequest(
       name: String,
       age: Int
-  ) derives Decoder
+  ) derives Decoder, Encoder // http requestで使いたくなったのでEncoderを追加
 
   final case class ExampleControllerResponse(
       message: String
-  ) derives Encoder
+  ) derives Decoder, Encoder

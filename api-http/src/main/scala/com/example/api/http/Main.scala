@@ -2,7 +2,6 @@ package com.example.api.http
 
 import cats.effect.{ IO, IOApp }
 import com.comcast.ip4s.*
-import com.example.api.app.controller.ExampleController
 import com.example.api.http.route.ExampleRoute
 import fs2.io.net.Network
 import org.http4s.ember.client.EmberClientBuilder
@@ -21,9 +20,11 @@ object Main extends IOApp.Simple:
 
       logger = Slf4jLogger.getLogger[IO]
 
+      cc = ControllerContainer(client)
+
       httpApp: HttpApp[IO] =
         ExampleRoute
-          .route(new ExampleController)
+          .route(cc)
           .orNotFound
           .pipe(org.http4s.server.middleware.Logger.httpApp(logHeaders = true, logBody = true))
 
