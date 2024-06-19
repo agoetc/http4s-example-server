@@ -60,4 +60,14 @@ object Dependencies {
     val catsEffect = "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.6"
   }
 
+  object Doobie {
+    val doobieCore = "org.tpolecat" %% "doobie-core" % "1.0.0-M5"
+    val doobieHikari = "org.tpolecat" %% "doobie-hikari" % "1.0.0-M5"
+
+    val all: Seq[ModuleID] = Seq(
+      doobieCore,
+      doobieHikari
+    )
+  }
+
 }

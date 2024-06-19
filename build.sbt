@@ -1,4 +1,4 @@
-import Dependencies.*
+import Dependencies._
 
 inThisBuild(
   Seq(
@@ -39,3 +39,24 @@ lazy val apiHttp = (project in file("api-http"))
           CatsEffect.catsEffect
         )
   ) dependsOn apiApp
+
+lazy val adapter = (project in file("adapter"))
+  .settings(
+    name := "adapter",
+    libraryDependencies ++=
+      Doobie.all ++
+        Seq(
+          Cats.catsCore,
+          CatsEffect.catsEffect
+        )
+  ) dependsOn (apiApp, domain)
+
+lazy val domain = (project in file("domain"))
+  .settings(
+    name := "domain",
+    libraryDependencies ++=
+      Seq(
+        Cats.catsCore,
+        CatsEffect.catsEffect
+      )
+  )
