@@ -34,6 +34,7 @@ lazy val apiHttp = (project in file("api-http"))
         Circe.all ++
         Log4Cats.all ++
         Seq(
+          Auth.jwtCirce,
           LogBackClassic.logbackClassic,
           Cats.catsCore,
           CatsEffect.catsEffect

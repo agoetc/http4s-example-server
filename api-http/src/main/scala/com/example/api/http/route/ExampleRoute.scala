@@ -1,36 +1,57 @@
 package com.example.api.http.route
 
+import cats.data.Kleisli
 import cats.effect.IO
+import cats.implicits.toSemigroupKOps
 import com.example.api.app.controller.ExampleController
 import com.example.api.http.ControllerContainer
+import org.http4s.*
 import org.http4s.circe.CirceEntityCodec.*
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{ HttpRoutes, circe }
 
-object ExampleRoute:
+import scala.util.chaining.scalaUtilChainingOps
 
-  def route(cc: ControllerContainer): HttpRoutes[IO] =
-    val dsl = new Http4sDsl[IO] {}
-    import dsl.*
+class ExampleRoute(
+    authenticateMiddleware: AuthenticateMiddleware,
+    cc: ControllerContainer
+) {
 
-    HttpRoutes.of[IO] {
-      case req @ GET -> Root / "example" =>
-        for {
-          // decode http4s.circe.CirceEntityCodec.circeEntityDecoder
-          reqBody <- req.as[ExampleController.ExampleControllerRequest]
+  private val dsl = new Http4sDsl[IO] {}
+  import dsl.*
 
-          res <- cc.exampleController.execute(reqBody)
-
-          // encode http4s.circe.CirceEntityCodec.circeEntityEncoder
-          resp <- Ok(res)
-        } yield resp
-      case GET -> Root / "example" / "http-run" =>
-        for {
-          res <- cc.exampleHttpRunController.execute()
-          resp <- Ok(res)
-        } yield resp
-      case GET -> Root / "aaa" =>
-        for {
-          resp <- Ok("aaa")
-        } yield resp
+  private val authedRoute = AuthedRoutes
+    .of[LoginAccount, IO] { case GET -> Root / "example" as loginAccount =>
+      val request = ExampleController.ExampleControllerRequest(loginAccount.id, loginAccount.age)
+      for {
+        res <- cc.exampleController.execute(request)
+        resp <- Ok(res)
+      } yield resp
     }
+    .pipe(authenticateMiddleware.buildMiddleware)
+
+  private val publicRoute = HttpRoutes.of[IO] {
+    case req @ GET -> Root / "example" =>
+      for {
+        // decode http4s.circe.CirceEntityCodec.circeEntityDecoder
+        reqBody <- req.as[ExampleController.ExampleControllerRequest]
+
+        res <- cc.exampleController.execute(reqBody)
+
+        // encode http4s.circe.CirceEntityCodec.circeEntityEncoder
+        resp <- Ok(res)
+      } yield resp
+    case GET -> Root / "example" / "http-run" =>
+      for {
+        res <- cc.exampleHttpRunController.execute()
+        resp <- Ok(res)
+      } yield resp
+    case GET -> Root / "aaa" =>
+      for {
+        resp <- Ok("aaa")
+      } yield resp
+  }
+
+  def route: HttpRoutes[IO] = {
+    publicRoute <+> authedRoute
+  }
+}

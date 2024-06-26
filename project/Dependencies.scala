@@ -70,4 +70,8 @@ object Dependencies {
     )
   }
 
+  object Auth {
+    val jwtCirce = "com.github.jwt-scala" %% "jwt-circe" % "10.0.1"
+  }
+
 }
