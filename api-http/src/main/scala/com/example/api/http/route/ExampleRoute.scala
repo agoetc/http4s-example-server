@@ -19,17 +19,21 @@ class ExampleRoute(
   private val dsl = new Http4sDsl[IO] {}
   import dsl.*
 
-  private val authedRoute = AuthedRoutes
-    .of[LoginAccount, IO] { case GET -> Root / "example" as loginAccount =>
-      val request = ExampleController.ExampleControllerRequest(loginAccount.id, loginAccount.age)
-      for {
-        res <- cc.exampleController.execute(request)
-        resp <- Ok(res)
-      } yield resp
-    }
-    .pipe(authenticateMiddleware.buildMiddleware)
+  private val authedRoute =
+    AuthedRoutes
+      .of[LoginInfo, IO] { case GET -> Root / "authed-route" as loginInfo =>
+        val request = ExampleController.ExampleControllerRequest(
+          loginInfo.user.name,
+          loginInfo.user.age
+        )
+        for {
+          res <- cc.exampleController.execute(request)
+          resp <- Ok(res)
+        } yield resp
+      }
+      .pipe(authenticateMiddleware.buildMiddleware)
 
-  private val publicRoute = HttpRoutes.of[IO] {
+  private val publicRoute: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case req @ GET -> Root / "example" =>
       for {
         // decode http4s.circe.CirceEntityCodec.circeEntityDecoder

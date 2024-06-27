@@ -21,9 +21,9 @@ lazy val apiApp = (project in file("api-app"))
         ),
     assembly / assemblyMergeStrategy := {
       case "module-info.class" => MergeStrategy.discard
-      case x                   => (assembly / assemblyMergeStrategy).value.apply(x)
+      case x => (assembly / assemblyMergeStrategy).value.apply(x)
     }
-  )
+  ) dependsOn (domain)
 
 lazy val apiHttp = (project in file("api-http"))
   .settings(
@@ -39,7 +39,7 @@ lazy val apiHttp = (project in file("api-http"))
           Cats.catsCore,
           CatsEffect.catsEffect
         )
-  ) dependsOn apiApp
+  ) dependsOn (apiApp, domain)
 
 lazy val adapter = (project in file("adapter"))
   .settings(

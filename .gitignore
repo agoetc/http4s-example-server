@@ -4,4 +4,8 @@
 .bsp
 target
 project/target
-
+.bloop
+.metals
+.trunk
+.vscode
+metals.sbt

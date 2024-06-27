@@ -11,6 +11,7 @@ import pdi.jwt.*
 
 import cats.data.OptionT
 import org.http4s.Status.Forbidden
+import com.example.domain.User
 
 // TODO Configから取得するようにする
 case class AuthenticateConfig(secretKey: String)
@@ -21,7 +22,7 @@ class AuthenticateMiddleware(config: AuthenticateConfig) {
   import dsl.*
   import org.http4s.server.AuthMiddleware
 
-  val authLoginAccount: Kleisli[IO, Request[IO], Either[String, LoginAccount]] =
+  val authLogin: Kleisli[IO, Request[IO], Either[String, LoginInfo]] =
     Kleisli { request =>
       val tokenResult: Either[String, JwtClaim] = extractToken(request)
       tokenResult.map(authenticate).pure[IO]
@@ -31,9 +32,9 @@ class AuthenticateMiddleware(config: AuthenticateConfig) {
     Kleisli { req =>
       OptionT.liftF(Forbidden(req.context))
     }
-    
-  def buildMiddleware: AuthMiddleware[IO, LoginAccount] =
-    AuthMiddleware(authLoginAccount, onFailure)
+
+  def buildMiddleware: AuthMiddleware[IO, LoginInfo] =
+    AuthMiddleware(authLogin, onFailure)
 
   private def extractToken(request: Request[IO]): Either[String, JwtClaim] =
     request.headers.get[Authorization] match
@@ -45,9 +46,8 @@ class AuthenticateMiddleware(config: AuthenticateConfig) {
       case Some(_) | None =>
         "Bearer token not found".asLeft[JwtClaim]
 
-  private def authenticate(claim: JwtClaim): LoginAccount = {
+  private def authenticate(claim: JwtClaim): LoginInfo = {
     // TODO ここで認証処理を行う
-    LoginAccount(claim.content, 18)
+    LoginInfo(User(1, claim.content, 20))
   }
-
 }
