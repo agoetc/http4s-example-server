@@ -19,21 +19,12 @@ import scala.util.chaining.*
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContextExecutor
 
-import pureconfig.ConfigReader
-import pureconfig.generic.derivation.default.*
 import pureconfig.module.catseffect.syntax.*
 
 import cats.effect.kernel.Resource
 import pureconfig.ConfigSource
 import com.zaxxer.hikari.HikariConfig
 import doobie.hikari.HikariTransactor
-
-case class DBConfig(
-    driver: String,
-    url: String,
-    username: String,
-    password: String
-) derives ConfigReader
 
 object Main extends IOApp.Simple:
   val run: IO[Unit] = {
