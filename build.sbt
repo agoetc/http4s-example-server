@@ -23,7 +23,7 @@ lazy val apiApp = (project in file("api-app"))
       case "module-info.class" => MergeStrategy.discard
       case x => (assembly / assemblyMergeStrategy).value.apply(x)
     }
-  ) dependsOn (domain)
+  ) dependsOn (domain, usecase)
 
 lazy val apiHttp = (project in file("api-http"))
   .settings(
@@ -33,13 +33,14 @@ lazy val apiHttp = (project in file("api-http"))
       Http4s.all ++
         Circe.all ++
         Log4Cats.all ++
+        PureConfig.all ++
         Seq(
           Auth.jwtCirce,
           LogBackClassic.logbackClassic,
           Cats.catsCore,
           CatsEffect.catsEffect
         )
-  ) dependsOn (apiApp, domain)
+  ) dependsOn (apiApp, domain, usecase, adapter)
 
 lazy val adapter = (project in file("adapter"))
   .settings(
@@ -48,7 +49,8 @@ lazy val adapter = (project in file("adapter"))
       Doobie.all ++
         Seq(
           Cats.catsCore,
-          CatsEffect.catsEffect
+          CatsEffect.catsEffect,
+          MySQL.mysqlConnectorJava
         )
   ) dependsOn (apiApp, domain)
 
@@ -61,3 +63,13 @@ lazy val domain = (project in file("domain"))
         CatsEffect.catsEffect
       )
   )
+
+lazy val usecase = (project in file("usecase"))
+  .settings(
+    name := "usecase",
+    libraryDependencies ++=
+      Seq(
+        Cats.catsCore,
+        CatsEffect.catsEffect
+      )
+  ) dependsOn (domain)

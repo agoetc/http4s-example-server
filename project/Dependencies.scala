@@ -49,15 +49,21 @@ object Dependencies {
       slp4s
     )
   }
-  
+
   object LogBackClassic {
     val logbackClassic = "ch.qos.logback" % "logback-classic" % "1.5.6"
   }
 
-  object Pureconfig {
-    val core = "com.github.pureconfig" %% "pureconfig-core" % "0.17.6"
-    val ip4s = "com.github.pureconfig" %% "pureconfig-ip4s" % "0.17.6"
+  object PureConfig {
     val catsEffect = "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.6"
+    val core       = "com.github.pureconfig" %% "pureconfig-core"        % "0.17.6"
+    val ip4s       = "com.github.pureconfig" %% "pureconfig-ip4s"        % "0.17.6"
+
+    val all: Seq[ModuleID] = Seq(
+      catsEffect,
+      core,
+      ip4s
+    )
   }
 
   object Doobie {
@@ -68,6 +74,10 @@ object Dependencies {
       doobieCore,
       doobieHikari
     )
+  }
+
+  object MySQL {
+    val mysqlConnectorJava = "mysql" % "mysql-connector-java" % "8.0.33"
   }
 
   object Auth {

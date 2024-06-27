@@ -36,7 +36,12 @@ curl -v -X GET http://localhost:8080/example \
 
 ```shell
 curl -v -X GET http://localhost:8080/example/http-run \
-  -H "Content-Type: application/json" \
+  -H "Content-Type: application/json"
+```
+
+```shell
+curl -v -X GET http://localhost:8080/example/from-db \
+  -H "Content-Type: application/json"
 ```
 
 ### http://localhost:8080/aaa

@@ -6,6 +6,7 @@ db-migrate:
 	docker run --rm -v $(PWD)/db/migrations:/flyway/sql \
 		--network=host \
 		flyway/flyway:$(FLYWAY_VERSION) migrate \
+			-locations=filesystem:/flyway/sql \
 			-url=jdbc:mysql://localhost:3306/$(DB_DATABASE) \
 			-user=$(DB_USER) \
 			-password=$(DB_PASSWORD)

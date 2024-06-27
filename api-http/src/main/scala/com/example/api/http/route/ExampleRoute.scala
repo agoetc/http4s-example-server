@@ -34,14 +34,18 @@ class ExampleRoute(
       .pipe(authenticateMiddleware.buildMiddleware)
 
   private val publicRoute: HttpRoutes[IO] = HttpRoutes.of[IO] {
+
     case req @ GET -> Root / "example" =>
       for {
         // decode http4s.circe.CirceEntityCodec.circeEntityDecoder
         reqBody <- req.as[ExampleController.ExampleControllerRequest]
-
         res <- cc.exampleController.execute(reqBody)
-
         // encode http4s.circe.CirceEntityCodec.circeEntityEncoder
+        resp <- Ok(res)
+      } yield resp
+    case GET -> Root / "example" / "from-db" =>
+      for {
+        res <- cc.exampleController.executeByDB()
         resp <- Ok(res)
       } yield resp
     case GET -> Root / "example" / "http-run" =>
