@@ -9,7 +9,7 @@ class ExampleController(getUserUsecase: GetUserUsecase):
 
   def execute(req: ExampleControllerRequest): IO[ExampleControllerResponse] = {
     ExampleControllerResponse(
-        s"Hello, ${req.name}, you are ${req.age} years old!"
+      s"Hello, ${req.name}, you are ${req.age} years old!"
     ).pure[IO]
   }
 
@@ -17,7 +17,7 @@ class ExampleController(getUserUsecase: GetUserUsecase):
     val userId = 1
     getUserUsecase.execute(userId).map { user =>
       ExampleControllerResponse(
-          s"Hello, ${user.get.name}, you are ${user.get.age} years old!"
+        s"Hello, ${user.get.name}, you are ${user.get.age} years old!"
       )
     }
   }
@@ -28,8 +28,10 @@ object ExampleController:
   case class ExampleControllerRequest(
       name: String,
       age: Int
-  ) derives Decoder, Encoder // http requestで使いたくなったのでEncoderを追加
+  ) derives Decoder,
+        Encoder // http requestで使いたくなったのでEncoderを追加
 
   final case class ExampleControllerResponse(
       message: String
-  ) derives Decoder, Encoder
+  ) derives Decoder,
+        Encoder

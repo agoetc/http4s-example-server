@@ -2,7 +2,10 @@ package com.example.api.app.controller
 
 import cats.effect.IO
 import cats.syntax.all.*
-import com.example.api.app.controller.ExampleController.{ ExampleControllerRequest, ExampleControllerResponse }
+import com.example.api.app.controller.ExampleController.{
+  ExampleControllerRequest,
+  ExampleControllerResponse
+}
 import org.http4s.*
 import org.http4s.circe.CirceEntityEncoder.circeEntityEncoder
 import org.http4s.circe.jsonOf

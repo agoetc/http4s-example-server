@@ -1,6 +1,6 @@
 package com.example.adapter.rdb
 import cats.effect.IO
-import com.example.domain.{ User, UserRepository }
+import com.example.domain.{User, UserRepository}
 
 import doobie.*
 import doobie.implicits.*

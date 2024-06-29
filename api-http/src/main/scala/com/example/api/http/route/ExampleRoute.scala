@@ -7,9 +7,9 @@ import com.example.api.app.controller.ExampleController
 import com.example.api.http.ControllerContainer
 import org.http4s.*
 import org.http4s.circe.CirceEntityCodec.*
-import org.http4s.dsl.Http4sDsl
 
 import scala.util.chaining.scalaUtilChainingOps
+import org.http4s.dsl.Http4sDsl
 
 class ExampleRoute(
     authenticateMiddleware: AuthenticateMiddleware,
@@ -33,31 +33,32 @@ class ExampleRoute(
       }
       .pipe(authenticateMiddleware.buildMiddleware)
 
-  private val publicRoute: HttpRoutes[IO] = HttpRoutes.of[IO] {
-
-    case req @ GET -> Root / "example" =>
-      for {
-        // decode http4s.circe.CirceEntityCodec.circeEntityDecoder
-        reqBody <- req.as[ExampleController.ExampleControllerRequest]
-        res <- cc.exampleController.execute(reqBody)
-        // encode http4s.circe.CirceEntityCodec.circeEntityEncoder
-        resp <- Ok(res)
-      } yield resp
-    case GET -> Root / "example" / "from-db" =>
-      for {
-        res <- cc.exampleController.executeByDB()
-        resp <- Ok(res)
-      } yield resp
-    case GET -> Root / "example" / "http-run" =>
-      for {
-        res <- cc.exampleHttpRunController.execute()
-        resp <- Ok(res)
-      } yield resp
-    case GET -> Root / "aaa" =>
-      for {
-        resp <- Ok("aaa")
-      } yield resp
-  }
+  private val publicRoute: HttpRoutes[IO] =
+    HttpRoutes
+      .of[IO] {
+        case req @ GET -> Root / "example" =>
+          for {
+            // decode http4s.circe.CirceEntityCodec.circeEntityDecoder
+            reqBody <- req.as[ExampleController.ExampleControllerRequest]
+            res <- cc.exampleController.execute(reqBody)
+            // encode http4s.circe.CirceEntityCodec.circeEntityEncoder
+            resp <- Ok(res)
+          } yield resp
+        case GET -> Root / "example" / "from-db" =>
+          for {
+            res <- cc.exampleController.executeByDB()
+            resp <- Ok(res)
+          } yield resp
+        case GET -> Root / "example" / "http-run" =>
+          for {
+            res <- cc.exampleHttpRunController.execute()
+            resp <- Ok(res)
+          } yield resp
+        case GET -> Root / "aaa" =>
+          for {
+            resp <- Ok("aaa")
+          } yield resp
+      }
 
   def route: HttpRoutes[IO] = {
     publicRoute <+> authedRoute

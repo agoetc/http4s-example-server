@@ -5,7 +5,7 @@ import cats.effect.IO
 import com.example.domain.User
 
 class GetUserUsecase(userRepository: UserRepository) {
-  def execute(userId: Long): IO[Option[User]]= {
-   userRepository.find(userId)
+  def execute(userId: Long): IO[Option[User]] = {
+    userRepository.find(userId)
   }
 }
