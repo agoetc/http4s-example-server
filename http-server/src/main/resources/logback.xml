@@ -1,0 +1,11 @@
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</pattern>
+    </encoder>
+  </appender>
+  <!-- DEV か LOCAL のときは LOG_LEVEL を DEBUG にする  -->
+  <root level="${APP_ENV=='DEV'||APP_ENV=='LOCAL' ? 'DEBUG' : 'INFO'}">　
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

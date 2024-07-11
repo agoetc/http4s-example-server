@@ -10,7 +10,6 @@ object Dependencies {
   }
 
   object Http4s {
-    val Http4sVersion = "0.23.27"
     val http4sEmberServer = "org.http4s" %% "http4s-ember-server" % "0.23.27"
     val http4sEmberClient = "org.http4s" %% "http4s-ember-client" % "0.23.27"
     val http4sCirce = "org.http4s" %% "http4s-circe" % "0.23.27"
@@ -55,9 +54,10 @@ object Dependencies {
   }
 
   object PureConfig {
-    val catsEffect = "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.6"
-    val core       = "com.github.pureconfig" %% "pureconfig-core"        % "0.17.6"
-    val ip4s       = "com.github.pureconfig" %% "pureconfig-ip4s"        % "0.17.6"
+    val catsEffect =
+      "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.6"
+    val core = "com.github.pureconfig" %% "pureconfig-core" % "0.17.6"
+    val ip4s = "com.github.pureconfig" %% "pureconfig-ip4s" % "0.17.6"
 
     val all: Seq[ModuleID] = Seq(
       catsEffect,
@@ -82,6 +82,8 @@ object Dependencies {
 
   object Auth {
     val jwtCirce = "com.github.jwt-scala" %% "jwt-circe" % "10.0.1"
+    val jwks = "com.auth0" % "jwks-rsa" % "0.22.1"
+
   }
 
 }

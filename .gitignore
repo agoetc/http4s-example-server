@@ -1,6 +1,8 @@
+.env.local
+builds/
+
 .idea
 .DS_Store
-
 .bsp
 target
 project/target

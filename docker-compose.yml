@@ -14,3 +14,7 @@ services:
 
 volumes:
   db:
+
+networks:
+  my_network:
+    driver: bridge
