@@ -1,6 +1,7 @@
 package example.com.http.server
 
 import cats.effect.IO
+import cats.effect.std.Supervisor
 import org.http4s.client.Client
 import doobie.util.transactor.Transactor
 import example.com.adapter.exampleApi.ExampleApiAdapterImpl
@@ -9,7 +10,7 @@ import example.com.app.endpoint.*
 import example.com.usecase.{ExecuteExampleApiUsecase, GetUserUsecase}
 import example.com.usecase.auth.GetLoginInfoBySubUsecase
 
-class EndpointModule(client: Client[IO], xa: Transactor[IO]) {
+class EndpointModule(client: Client[IO], xa: Transactor[IO], supervisor: Supervisor[IO]) {
 
   private lazy val userRepository = new UserRepositoryImpl(xa)
 
@@ -28,7 +29,7 @@ class EndpointModule(client: Client[IO], xa: Transactor[IO]) {
   // Logic
   private lazy val exampleLogic = new ExampleLogic(getUserUsecase)
   private lazy val exampleHttpRunLogic = new ExampleHttpRunLogic(executeExampleApiUsecase)
-  private lazy val exampleBackGroundLogic = new ExampleBackGroundLogic()
+  private lazy val exampleBackGroundLogic = new ExampleBackGroundLogic(supervisor, ExampleBackGroundLogic.defaultTask)
 
   // Endpoint
   lazy val exampleEndpoint = new ExampleEndpoint(exampleLogic)

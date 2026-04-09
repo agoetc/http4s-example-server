@@ -2,6 +2,7 @@ package example.com.http.server
 
 import cats.data.EitherT
 import cats.effect.*
+import cats.effect.std.Supervisor
 import com.comcast.ip4s.*
 import com.zaxxer.hikari.HikariConfig
 import example.com.adapter.auth0.Auth0Validator
@@ -58,9 +59,10 @@ object Main extends IOApp.Simple {
 
       xa <- HikariTransactor.fromHikariConfig[IO](hikariConfig, blockingEc)
       client <- EmberClientBuilder.default[IO].build
+      supervisor <- Supervisor[IO](await = true)
 
       // DI module
-      module = EndpointModule(client, xa)
+      module = EndpointModule(client, xa, supervisor)
 
       // Auth0
       auth0Validator <- configLoader.loadAuth0Config.toResource

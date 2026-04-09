@@ -1,6 +1,7 @@
 package example.com.app.endpoint
 
 import cats.effect.IO
+import cats.effect.std.Supervisor
 import cats.syntax.all.*
 import io.circe.{Decoder, Encoder}
 import org.typelevel.log4cats.SelfAwareStructuredLogger
@@ -10,27 +11,28 @@ import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 import sttp.tapir.server.ServerEndpoint
 
-class ExampleBackGroundLogic {
+class ExampleBackGroundLogic(supervisor: Supervisor[IO], task: IO[Unit]) {
   import ExampleBackGroundEndpoint.*
-
-  private val logger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   def execute(): IO[Either[HttpErrorResponse, ExampleBackGroundEndpointResponse]] =
     (for {
-      _ <- stream.compile.drain.start
+      _ <- supervisor.supervise(task)
       res <- ExampleBackGroundEndpointResponse("Hello").pure[IO]
     } yield Right(res))
       .handleError(e => Left(HttpErrorResponse(e.getMessage)))
+}
 
-  private def stream: fs2.Stream[IO, Unit] = {
+object ExampleBackGroundLogic {
+
+  private val logger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
+
+  def defaultTask: IO[Unit] = {
     import scala.concurrent.duration._
-    fs2.Stream.eval(
-      for {
-        _ <- logger.info("Start background process")
-        _ <- IO.sleep(5.seconds)
-        _ <- logger.info("5 seconds passed")
-      } yield ()
-    )
+    for {
+      _ <- logger.info("Start background process")
+      _ <- IO.sleep(5.seconds)
+      _ <- logger.info("5 seconds passed")
+    } yield ()
   }
 }
 

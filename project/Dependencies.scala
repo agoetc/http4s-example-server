@@ -89,6 +89,10 @@ object Dependencies {
     val all: Seq[ModuleID] = Seq(http4sServer, jsonCirce, swaggerUiBundle)
   }
 
+  object ScalaTest {
+    val scalatest = "org.scalatest" %% "scalatest" % "3.2.19" % Test
+  }
+
   object Auth {
     val jwtCirce = "com.github.jwt-scala" %% "jwt-circe" % "10.0.1"
     val jwks = "com.auth0" % "jwks-rsa" % "0.22.1"

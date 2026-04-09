@@ -46,7 +46,8 @@ lazy val app = (project in file("app"))
           Tapir.http4sServer,
           Tapir.jsonCirce,
           Cats.catsCore,
-          CatsEffect.catsEffect
+          CatsEffect.catsEffect,
+          ScalaTest.scalatest
         )
   )
   .dependsOn(domain, usecase)
