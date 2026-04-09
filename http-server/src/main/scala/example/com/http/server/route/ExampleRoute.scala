@@ -2,11 +2,14 @@ package example.com.http.server.route
 
 import cats.effect.IO
 import example.com.adapter.auth0.Auth0Validator
-import example.com.app.controller.{ExampleController, HttpErrorResponse, TapirEndpoints}
+import example.com.app.endpoint.{ExampleEndpoint, HttpErrorResponse}
 import example.com.domain.auth.LoginInfo
-import example.com.http.server.ControllerContainer
+import example.com.http.server.EndpointModule
 import org.http4s.HttpRoutes
 import pdi.jwt.JwtClaim
+import sttp.tapir.*
+import sttp.tapir.generic.auto.*
+import sttp.tapir.json.circe.*
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.server.http4s.Http4sServerInterpreter
 import sttp.tapir.swagger.bundle.SwaggerInterpreter
@@ -15,15 +18,20 @@ import scala.util.{Failure, Success}
 
 class ExampleRoute(
     auth0Validator: Auth0Validator,
-    cc: ControllerContainer,
+    module: EndpointModule,
     getLoginInfo: JwtClaim => IO[Either[String, LoginInfo]]
 ):
 
-  // --- Health check (serverLogic不要のシンプルなもの) ---
+  // --- Health check ---
   private val healthCheckSE: ServerEndpoint[Any, IO] =
-    TapirEndpoints.healthCheck.serverLogicSuccess[IO](_ => IO.pure("OK"))
+    endpoint.get
+      .in("health-check")
+      .out(stringBody)
+      .serverLogicSuccess[IO](_ => IO.pure("OK"))
+      .name("healthCheck")
+      .description("Health check endpoint")
 
-  // --- Authed route (Auth0Validatorがhttp-server層にあるためここで定義) ---
+  // --- Authed route ---
   private def securityLogic(
       token: String
   ): IO[Either[HttpErrorResponse, LoginInfo]] =
@@ -37,29 +45,29 @@ class ExampleRoute(
         }
 
   private val authedRouteSE: ServerEndpoint[Any, IO] =
-    TapirEndpoints.authedRoute
+    endpoint.get
+      .in("authed-route")
+      .securityIn(auth.bearer[String]())
+      .out(jsonBody[ExampleEndpoint.ExampleEndpointResponse])
+      .errorOut(jsonBody[HttpErrorResponse])
       .serverSecurityLogic[LoginInfo, IO](securityLogic)
       .serverLogic { loginInfo => _ =>
-        val request = ExampleController.ExampleControllerRequest(
+        val request = ExampleEndpoint.ExampleEndpointRequest(
           loginInfo.user.name,
           loginInfo.user.age
         )
-        cc.exampleController
-          .execute(request)
-          .map(Right(_))
-          .handleError(e => Left(HttpErrorResponse(e.getMessage)))
+        module.exampleEndpoint.logic.execute(request)
       }
+      .name("authedRoute")
+      .description("JWT authenticated endpoint")
 
   // --- 全ServerEndpointを集約 ---
-  val serverEndpoints: List[ServerEndpoint[Any, IO]] = List(
-    healthCheckSE,
-    cc.exampleController.exampleEndpoint,
-    cc.exampleController.exampleFromDbEndpoint,
-    cc.exampleController.useOpaqueTypeEndpoint,
-    cc.exampleHttpRunController.httpRunEndpoint,
-    cc.exampleBackGroundController.backgroundRunEndpoint,
-    authedRouteSE
-  )
+  val serverEndpoints: List[ServerEndpoint[Any, IO]] =
+    List(healthCheckSE) ++
+      module.exampleEndpoint.allEndpoints ++
+      module.exampleHttpRunEndpoint.allEndpoints ++
+      module.exampleBackGroundEndpoint.allEndpoints ++
+      List(authedRouteSE)
 
   // --- Swagger UI ---
   val swaggerEndpoints: List[ServerEndpoint[Any, IO]] =

@@ -1,4 +1,4 @@
-package example.com.app.controller
+package example.com.app.endpoint
 
 import io.circe.{Decoder, Encoder}
 

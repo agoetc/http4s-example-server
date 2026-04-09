@@ -5,11 +5,11 @@ import org.http4s.client.Client
 import doobie.util.transactor.Transactor
 import example.com.adapter.exampleApi.ExampleApiAdapterImpl
 import example.com.adapter.rdb.UserRepositoryImpl
-import example.com.app.controller.*
+import example.com.app.endpoint.*
 import example.com.usecase.{ExecuteExampleApiUsecase, GetUserUsecase}
 import example.com.usecase.auth.GetLoginInfoBySubUsecase
 
-class ControllerContainer(client: Client[IO], xa: Transactor[IO]) {
+class EndpointModule(client: Client[IO], xa: Transactor[IO]) {
 
   private lazy val userRepository = new UserRepositoryImpl(xa)
 
@@ -25,11 +25,13 @@ class ControllerContainer(client: Client[IO], xa: Transactor[IO]) {
     userRepository
   )
 
-  lazy val exampleController = new ExampleController(getUserUsecase)
+  // Logic
+  private lazy val exampleLogic = new ExampleLogic(getUserUsecase)
+  private lazy val exampleHttpRunLogic = new ExampleHttpRunLogic(executeExampleApiUsecase)
+  private lazy val exampleBackGroundLogic = new ExampleBackGroundLogic()
 
-  lazy val exampleHttpRunController = new ExampleHttpRunController(
-    executeExampleApiUsecase
-  )
-
-  lazy val exampleBackGroundController = new ExampleBackGroundController()
+  // Endpoint
+  lazy val exampleEndpoint = new ExampleEndpoint(exampleLogic)
+  lazy val exampleHttpRunEndpoint = new ExampleHttpRunEndpoint(exampleHttpRunLogic)
+  lazy val exampleBackGroundEndpoint = new ExampleBackGroundEndpoint(exampleBackGroundLogic)
 }

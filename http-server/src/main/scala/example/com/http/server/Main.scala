@@ -59,8 +59,8 @@ object Main extends IOApp.Simple {
       xa <- HikariTransactor.fromHikariConfig[IO](hikariConfig, blockingEc)
       client <- EmberClientBuilder.default[IO].build
 
-      // controller用 DI container
-      cc = ControllerContainer(client, xa)
+      // DI module
+      module = EndpointModule(client, xa)
 
       // Auth0
       auth0Validator <- configLoader.loadAuth0Config.toResource
@@ -69,11 +69,11 @@ object Main extends IOApp.Simple {
       // Tapir route
       exampleRoute = ExampleRoute(
         auth0Validator,
-        cc,
+        module,
         getLoginInfo = { claim =>
           (for {
             sub <- EitherT(IO(claim.subject.map(Sub(_)).toRight("sub not found")))
-            info <- EitherT(cc.getLoginInfoBySubUsecase.execute(sub)).leftMap(e =>
+            info <- EitherT(module.getLoginInfoBySubUsecase.execute(sub)).leftMap(e =>
               e.getMessage
             )
           } yield info).value
