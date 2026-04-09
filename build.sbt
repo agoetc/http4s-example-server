@@ -15,6 +15,7 @@ lazy val httpServer = (project in file("http-server"))
     libraryDependencies ++=
       Http4s.all ++
         Circe.all ++
+        Seq(Tapir.swaggerUiBundle) ++
         Log4Cats.all ++
         PureConfig.all ++
         Seq(
@@ -38,6 +39,8 @@ lazy val app = (project in file("app"))
       Circe.all ++
         Log4Cats.all ++
         Seq(
+          Tapir.http4sServer,
+          Tapir.jsonCirce,
           Cats.catsCore,
           CatsEffect.catsEffect
         )

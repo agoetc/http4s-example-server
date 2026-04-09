@@ -5,18 +5,14 @@ import cats.effect.*
 import com.comcast.ip4s.*
 import com.zaxxer.hikari.HikariConfig
 import example.com.adapter.auth0.Auth0Validator
-import example.com.domain.auth.{LoginInfo, Sub}
+import example.com.domain.auth.Sub
 import example.com.domain.config.DBConfig
 import example.com.http.server.config.AppConfigLoader
-import example.com.http.server.route.{
-  AuthenticateMiddlewareBuilder,
-  ExampleRoute
-}
+import example.com.http.server.route.ExampleRoute
 import doobie.hikari.HikariTransactor
 import doobie.util.ExecutionContexts
 import fs2.io.net.Network
 import org.http4s.*
-import org.http4s.dsl.Http4sDsl
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Server
@@ -51,7 +47,7 @@ object Main extends IOApp.Simple {
 
       blockingEc <- ExecutionContexts.fixedThreadPool[IO](
         Runtime.getRuntime.availableProcessors() * 2
-      ) // configから設定できるようにする
+      )
 
       configLoader = AppConfigLoader(appEnv)
 
@@ -63,40 +59,35 @@ object Main extends IOApp.Simple {
       xa <- HikariTransactor.fromHikariConfig[IO](hikariConfig, blockingEc)
       client <- EmberClientBuilder.default[IO].build
 
-      dsl = new Http4sDsl[IO] {}
-
       // controller用 DI container
       cc = ControllerContainer(client, xa)
 
-      authMiddlewareBuilder <-
-        configLoader.loadAuth0Config.toResource
-          .map { config =>
-            val validator = Auth0Validator(config)
+      // Auth0
+      auth0Validator <- configLoader.loadAuth0Config.toResource
+        .map(Auth0Validator(_))
 
-            AuthenticateMiddlewareBuilder(dsl, validator, logger)
-          }
-
-      authMiddleware = authMiddlewareBuilder.build[LoginInfo] { claim =>
-        (for {
-          sub <- EitherT(IO(claim.subject.map(Sub(_)).toRight("sub not found")))
-          info <- EitherT(cc.getLoginInfoBySubUsecase.execute(sub)).leftMap(e =>
-            e.getMessage
-          )
-        } yield info).value
-      }
+      // Tapir route
+      exampleRoute = ExampleRoute(
+        auth0Validator,
+        cc,
+        getLoginInfo = { claim =>
+          (for {
+            sub <- EitherT(IO(claim.subject.map(Sub(_)).toRight("sub not found")))
+            info <- EitherT(cc.getLoginInfoBySubUsecase.execute(sub)).leftMap(e =>
+              e.getMessage
+            )
+          } yield info).value
+        }
+      )
 
       httpApp: HttpApp[IO] = {
-        val route = ExampleRoute(
-          dsl,
-          authMiddleware,
-          cc
-        ).route.orNotFound
+        val app = exampleRoute.routes.orNotFound
 
         // 開発環境のときはRequestの内容をログ出力する
         if (appEnv.isDevelopment) {
-          Logger.httpApp(logHeaders = true, logBody = true)(route)
+          Logger.httpApp(logHeaders = true, logBody = true)(app)
         } else {
-          route
+          app
         }
       }
 

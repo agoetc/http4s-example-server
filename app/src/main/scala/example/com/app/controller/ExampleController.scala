@@ -4,6 +4,7 @@ import cats.effect.IO
 import cats.syntax.all.*
 import example.com.domain.UserId
 import example.com.usecase.GetUserUsecase
+import sttp.tapir.server.ServerEndpoint
 
 class ExampleController(getUserUsecase: GetUserUsecase):
   import ExampleController.*
@@ -23,6 +24,28 @@ class ExampleController(getUserUsecase: GetUserUsecase):
     }
   }
 
+  // --- Server Endpoints ---
+
+  val exampleEndpoint: ServerEndpoint[Any, IO] =
+    TapirEndpoints.example.serverLogic[IO] { req =>
+      execute(req)
+        .map(Right(_))
+        .handleError(e => Left(HttpErrorResponse(e.getMessage)))
+    }
+
+  val exampleFromDbEndpoint: ServerEndpoint[Any, IO] =
+    TapirEndpoints.exampleFromDb.serverLogic[IO] { _ =>
+      executeByDB()
+        .map(Right(_))
+        .handleError(e => Left(HttpErrorResponse(e.getMessage)))
+    }
+
+  val useOpaqueTypeEndpoint: ServerEndpoint[Any, IO] =
+    TapirEndpoints.useOpaqueType.serverLogicSuccess[IO] { _ =>
+      val userId = UserId(1)
+      IO.pure(userId.value)
+    }
+
 object ExampleController:
   import io.circe.*
 
@@ -30,7 +53,7 @@ object ExampleController:
       name: String,
       age: Int
   ) derives Decoder,
-        Encoder // http requestで使いたくなったのでEncoderを追加
+        Encoder
 
   final case class ExampleControllerResponse(
       message: String

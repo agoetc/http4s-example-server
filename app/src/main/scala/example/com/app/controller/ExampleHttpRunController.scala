@@ -4,6 +4,7 @@ import cats.effect.IO
 import cats.syntax.all.*
 import example.com.domain.exampleApi.ExampleApiAdapter
 import example.com.usecase.ExecuteExampleApiUsecase
+import sttp.tapir.server.ServerEndpoint
 
 class ExampleHttpRunController(usecase: ExecuteExampleApiUsecase) {
   import ExampleHttpRunController.*
@@ -14,6 +15,15 @@ class ExampleHttpRunController(usecase: ExecuteExampleApiUsecase) {
       ExampleHttpRunControllerResponse(res.message)
     }
   }
+
+  // --- Server Endpoint ---
+
+  val httpRunEndpoint: ServerEndpoint[Any, IO] =
+    TapirEndpoints.exampleHttpRun.serverLogic[IO] { _ =>
+      execute()
+        .map(Right(_))
+        .handleError(e => Left(HttpErrorResponse(e.getMessage)))
+    }
 }
 
 object ExampleHttpRunController {

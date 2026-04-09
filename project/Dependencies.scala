@@ -80,6 +80,15 @@ object Dependencies {
     val mysqlConnectorJava = "mysql" % "mysql-connector-java" % "8.0.33"
   }
 
+  object Tapir {
+    private val version = "1.11.11"
+    val http4sServer = "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % version
+    val jsonCirce = "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % version
+    val swaggerUiBundle = "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % version
+
+    val all: Seq[ModuleID] = Seq(http4sServer, jsonCirce, swaggerUiBundle)
+  }
+
   object Auth {
     val jwtCirce = "com.github.jwt-scala" %% "jwt-circe" % "10.0.1"
     val jwks = "com.auth0" % "jwks-rsa" % "0.22.1"
