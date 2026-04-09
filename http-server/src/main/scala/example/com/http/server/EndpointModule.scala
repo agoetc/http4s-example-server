@@ -29,7 +29,7 @@ class EndpointModule(client: Client[IO], xa: Transactor[IO], supervisor: Supervi
   // Logic
   private lazy val exampleLogic = new ExampleLogic(getUserUsecase)
   private lazy val exampleHttpRunLogic = new ExampleHttpRunLogic(executeExampleApiUsecase)
-  private lazy val exampleBackGroundLogic = new ExampleBackGroundLogic(supervisor, ExampleBackGroundLogic.defaultTask)
+  private lazy val exampleBackGroundLogic = new ExampleBackGroundLogic(supervisor)
 
   // Endpoint
   lazy val exampleEndpoint = new ExampleEndpoint(exampleLogic)

@@ -11,8 +11,10 @@ import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 import sttp.tapir.server.ServerEndpoint
 
-class ExampleBackGroundLogic(supervisor: Supervisor[IO], task: IO[Unit]) {
+class ExampleBackGroundLogic(supervisor: Supervisor[IO]) {
   import ExampleBackGroundEndpoint.*
+
+  private val logger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   def execute(): IO[Either[HttpErrorResponse, ExampleBackGroundEndpointResponse]] =
     (for {
@@ -20,13 +22,8 @@ class ExampleBackGroundLogic(supervisor: Supervisor[IO], task: IO[Unit]) {
       res <- ExampleBackGroundEndpointResponse("Hello").pure[IO]
     } yield Right(res))
       .handleError(e => Left(HttpErrorResponse(e.getMessage)))
-}
 
-object ExampleBackGroundLogic {
-
-  private val logger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
-
-  def defaultTask: IO[Unit] = {
+  private def task: IO[Unit] = {
     import scala.concurrent.duration._
     for {
       _ <- logger.info("Start background process")
