@@ -10,7 +10,7 @@ import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 import sttp.tapir.server.ServerEndpoint
 
-class ExampleLogic(getUserUsecase: GetUserUsecase):
+class ExampleLogic(getUserUsecase: GetUserUsecase) {
   import ExampleEndpoint.*
 
   def execute(
@@ -24,7 +24,7 @@ class ExampleLogic(getUserUsecase: GetUserUsecase):
       )
     )
 
-  def executeByDB(): IO[Either[HttpErrorResponse, ExampleEndpointResponse]] =
+  def executeByDB(): IO[Either[HttpErrorResponse, ExampleEndpointResponse]] = {
     val userId = UserId(1)
     getUserUsecase
       .execute(userId)
@@ -36,8 +36,10 @@ class ExampleLogic(getUserUsecase: GetUserUsecase):
         )
       }
       .handleError(e => Left(HttpErrorResponse(e.getMessage)))
+  }
+}
 
-class ExampleEndpoint(val logic: ExampleLogic):
+class ExampleEndpoint(val logic: ExampleLogic) {
   import ExampleEndpoint.*
 
   def example: ServerEndpoint[Any, IO] =
@@ -72,8 +74,9 @@ class ExampleEndpoint(val logic: ExampleLogic):
 
   def allEndpoints: List[ServerEndpoint[Any, IO]] =
     List(example, exampleFromDb, useOpaqueType)
+}
 
-object ExampleEndpoint:
+object ExampleEndpoint {
   case class ExampleEndpointRequest(
       name: String,
       age: Int
@@ -84,3 +87,4 @@ object ExampleEndpoint:
       message: String
   ) derives Decoder,
         Encoder
+}

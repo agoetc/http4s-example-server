@@ -26,8 +26,9 @@ class GetLoginInfoBySubUsecase(userRepository: UserRepository) {
 
 object GetLoginInfoBySubUsecase {
 
-  enum GetLoginInfoBySubUsecaseError(msg: String) extends Exception(msg):
+  enum GetLoginInfoBySubUsecaseError(msg: String) extends Exception(msg) {
     case NotFoundUser(sub: Sub)
         extends GetLoginInfoBySubUsecaseError(s"User not found. sub: $sub")
+  }
 
 }

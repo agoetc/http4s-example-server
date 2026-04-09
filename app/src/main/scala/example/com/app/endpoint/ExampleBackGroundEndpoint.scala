@@ -10,7 +10,7 @@ import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 import sttp.tapir.server.ServerEndpoint
 
-class ExampleBackGroundLogic:
+class ExampleBackGroundLogic {
   import ExampleBackGroundEndpoint.*
 
   private val logger: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
@@ -22,7 +22,7 @@ class ExampleBackGroundLogic:
     } yield Right(res))
       .handleError(e => Left(HttpErrorResponse(e.getMessage)))
 
-  private def stream: fs2.Stream[IO, Unit] =
+  private def stream: fs2.Stream[IO, Unit] = {
     import scala.concurrent.duration._
     fs2.Stream.eval(
       for {
@@ -31,8 +31,10 @@ class ExampleBackGroundLogic:
         _ <- logger.info("5 seconds passed")
       } yield ()
     )
+  }
+}
 
-class ExampleBackGroundEndpoint(logic: ExampleBackGroundLogic):
+class ExampleBackGroundEndpoint(logic: ExampleBackGroundLogic) {
   import ExampleBackGroundEndpoint.*
 
   def backgroundRun: ServerEndpoint[Any, IO] =
@@ -46,9 +48,11 @@ class ExampleBackGroundEndpoint(logic: ExampleBackGroundLogic):
 
   def allEndpoints: List[ServerEndpoint[Any, IO]] =
     List(backgroundRun)
+}
 
-object ExampleBackGroundEndpoint:
+object ExampleBackGroundEndpoint {
   case class ExampleBackGroundEndpointResponse(
       message: String
   ) derives Decoder,
         Encoder
+}

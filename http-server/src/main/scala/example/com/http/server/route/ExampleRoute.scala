@@ -20,7 +20,7 @@ class ExampleRoute(
     auth0Validator: Auth0Validator,
     module: EndpointModule,
     getLoginInfo: JwtClaim => IO[Either[String, LoginInfo]]
-):
+) {
 
   // --- Health check ---
   private val healthCheckSE: ServerEndpoint[Any, IO] =
@@ -35,7 +35,7 @@ class ExampleRoute(
   private def securityLogic(
       token: String
   ): IO[Either[HttpErrorResponse, LoginInfo]] =
-    auth0Validator.validateJwt(token) match
+    auth0Validator.validateJwt(token) match {
       case Failure(e) =>
         IO.pure(Left(HttpErrorResponse(s"Invalid token: ${e.getMessage}")))
       case Success(claim) =>
@@ -43,6 +43,7 @@ class ExampleRoute(
           case Right(info) => Right(info)
           case Left(msg) => Left(HttpErrorResponse(s"Authentication failed: $msg"))
         }
+    }
 
   private val authedRouteSE: ServerEndpoint[Any, IO] =
     endpoint.get
@@ -80,3 +81,4 @@ class ExampleRoute(
   // --- Convert to http4s HttpRoutes ---
   val routes: HttpRoutes[IO] =
     Http4sServerInterpreter[IO]().toRoutes(serverEndpoints ++ swaggerEndpoints)
+}

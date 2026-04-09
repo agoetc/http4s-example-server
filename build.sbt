@@ -4,7 +4,11 @@ inThisBuild(
   Seq(
     organization := "example.com",
     scalaVersion := "3.4.2",
-    version := "0.0.1-SNAPSHOT"
+    version := "0.0.1-SNAPSHOT",
+    scalacOptions ++= Seq(
+      "-no-indent",
+      "-rewrite"
+    )
   )
 )
 

@@ -9,17 +9,19 @@ import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.*
 import sttp.tapir.server.ServerEndpoint
 
-class ExampleHttpRunLogic(usecase: ExecuteExampleApiUsecase):
+class ExampleHttpRunLogic(usecase: ExecuteExampleApiUsecase) {
   import ExampleHttpRunEndpoint.*
 
-  def execute(): IO[Either[HttpErrorResponse, ExampleHttpRunEndpointResponse]] =
+  def execute(): IO[Either[HttpErrorResponse, ExampleHttpRunEndpointResponse]] = {
     val req = ExampleApiAdapter.ExampleRequest("Alice", 20)
     usecase
       .execute(req)
       .map(res => Right(ExampleHttpRunEndpointResponse(res.message)))
       .handleError(e => Left(HttpErrorResponse(e.getMessage)))
+  }
+}
 
-class ExampleHttpRunEndpoint(logic: ExampleHttpRunLogic):
+class ExampleHttpRunEndpoint(logic: ExampleHttpRunLogic) {
   import ExampleHttpRunEndpoint.*
 
   def httpRun: ServerEndpoint[Any, IO] =
@@ -33,9 +35,11 @@ class ExampleHttpRunEndpoint(logic: ExampleHttpRunLogic):
 
   def allEndpoints: List[ServerEndpoint[Any, IO]] =
     List(httpRun)
+}
 
-object ExampleHttpRunEndpoint:
+object ExampleHttpRunEndpoint {
   case class ExampleHttpRunEndpointResponse(
       message: String
   ) derives Decoder,
         Encoder
+}
